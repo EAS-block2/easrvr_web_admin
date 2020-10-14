@@ -35,7 +35,7 @@ fn main(){
           match communicate(config, &arg){
           Ok(_) => {if arg.contains("set"){render_page_s()}
                   else{render_page_r()}}
-          Err(_) => {render_error("cannot communicate with ops server");}
+          Err(e) => {render_error(&e.to_string());}
       }
     }
 }
