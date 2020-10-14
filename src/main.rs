@@ -84,7 +84,8 @@ fn render_error(reason: &str) {
     panic!("something went wrong and we told the user about it");
 }
 fn communicate (conf: Config, command: &String) -> std::io::Result<()>{
-    let mut stream = TcpStream::connect(conf.addr)?;
+    let mut stream = TcpStream::connect(&conf.addr)?;
+    println!("Addr: {}, Stream: {:?}",&conf.addr,&stream);
         let to_send = command.clone().into_bytes();
         stream.write(to_send.as_slice())?;
         let mut data = [0 as u8; 50];
