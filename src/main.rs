@@ -19,15 +19,15 @@ fn main(){
         let silent_status: Vec<String>;
         match read_status("/etc/EAS/faulted.yaml"){
             Ok(out) => {fault_status = out}
-            Err(_) => {fault_status = vec!("Cannot get Fault list".to_string())}
+            Err(e) => {fault_status = vec!(e.to_string())}
         }
         match read_status("/etc/EAS/gL.yaml"){
             Ok(out) => {general_status = out}
-            Err(_) => {general_status = vec!("Cannot get General status".to_string())}
+            Err(e) => {general_status = vec!(e.to_string())}
         }
         match read_status("/etc/EAS/sL.yaml"){
             Ok(out) => {silent_status = out}
-            Err(_) => {silent_status = vec!("Cannot get Silent status".to_string())}
+            Err(e) => {silent_status = vec!(e.to_string())}
         }
         render_page(fault_status, general_status, silent_status);}
 
@@ -159,7 +159,7 @@ println!("<html>
 </style>
 </head>
 <body>
-<p>Ellingtech Emergency Alert System Version Alpha-3</p>
+<p>Ellingtech Emergency Alert System Version 2</p>
 <h1 style=\"text-align: center;\">Alarm Control Interface</h1>
 <p>&nbsp;</p>
 <p>&nbsp;</p>");
@@ -213,6 +213,11 @@ fn read_status(path: &str) -> std::io::Result<Vec<String>>{
     let mut file = File::open(path)?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
-    let yam: Vec<String> = serde_yaml::from_str(&content).unwrap();
+    let yam: Vec<String>;
+    match serde_yaml::from_str(&content){
+      Ok(out) => {yam = out;}
+      Err(_) => {
+      return Err(std::io::Error::new(std::io::ErrorKind::InvalidData, "anomolous communication from server!"));}
+    }
     Ok(yam)
 }
